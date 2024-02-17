@@ -10,7 +10,5 @@ local_path_override(
 )
 
 pkgconfig_extension = use_extension("@pkgconfig//:extension.bzl", "pkgconfig_extension")
-pkgconfig_extension.import_package(name = "png")
-pkgconfig_extension.import_package(name = "jpeg")
-
-use_repo(pkgconfig_extension, "png")
+pkgconfig_extension.import_package(name = "libpng")
+use_repo(pkgconfig_extension, "libpng")

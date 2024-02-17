@@ -1,36 +1,27 @@
 def _get_pkgconfig_resolver(ctx):
     if ctx.os.name.find("windows") != -1:
-        fail("windows is not supported")
+        fail("unsupported os")
     else:
         return ctx.path(Label("//:resolver.py"))
 
 
 def _create_system_package_repo_impl(repository_ctx):
-    resolver = _get_pkgconfig_resolver(module_ctx)
-    attrs = repository_ctx.attr
-    result = module_ctx.execute([
+    resolver = _get_pkgconfig_resolver(repository_ctx)
+    name = repository_ctx.attr.name.split("~")[-1]
+    result = repository_ctx.execute([
         resolver,
-        "generate",
-        attrs.name,
-        attrs.version,
-        attrs.shared_library,
-        attrs.static_library,
-    ] + attrs.hdrs)
+        name,
+    ])
     if result.return_code != 0:
         fail(result.stderr)
-    repository_ctx.file("BUILD", module_ctx.read("./BUILD.generated"))
-    repository_ctx.file("MODULE.bazel", module_ctx.read("./MODULE.bazel.generated"))
+    lib_info = json.decode(result.stdout)
+    repository_ctx.symlink(lib_info['target'], lib_info['name'])
+    repository_ctx.file("BUILD", repository_ctx.read("./BUILD.generated"))
+    repository_ctx.file("MODULE.bazel", repository_ctx.read("./MODULE.bazel.generated"))
 
 
 create_system_package_repo = repository_rule(
     implementation = _create_system_package_repo_impl,
-    attrs = {
-        "version": attr.string(),
-        "name": attr.string(),
-        "hdrs": attr.string_list(mandatory=False, default=[]),
-        "shared_library": attr.string(default=''),
-        "static_library": attr.string(default=''),
-    },
 )
 
 
@@ -40,19 +31,7 @@ def _pkgconfig_extension_impl(module_ctx):
     package_names = []
     for mod in module_ctx.modules:
         for pkg in mod.tags.import_package:
-            package_names.append(pkg)
-
-    module_ctx.file("package_names.txt", content='\n'.join(package_names), executable=False, legacy_utf8=True)
-    # Resolve the pkg-config names and generate a json containing a way to resolve all
-    # the libraries paths.
-    result = module_ctx.execute([resolver, "resolve", "package_names.txt"])
-    if result.return_code != 0:
-        fail(result.stderr)
-
-    resolved_packages = json.decode(module_ctx.read("./resolved.json"))
-    for name in resolved_packages:
-        pkg = resolved_packages_list[name]
-        generate_system_package_repo(name = name, **pkg)
+            create_system_package_repo(name=pkg.name)
 
 
 import_package = tag_class(attrs = {

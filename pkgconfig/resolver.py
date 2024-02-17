@@ -1,13 +1,16 @@
+#!/usr/bin/env python3
 from collections import namedtuple
 import argparse
 import subprocess
 import pathlib
+import json
 
 
 BUILD_FILE_CONTENTS = """cc_import(
     name = "{name}",
     shared_library = "{shared_library}",
     includes = {includes}
+    visibility = ["//visibility:public"],
 )
 """
 
@@ -68,7 +71,8 @@ def generate(args):
     includes += '    ],'
 
     # Check for the existance of the library .so
-    shared_library = pathlib.Path(info.lib_path) / ('lib' + info.lname + '.so')
+    library_name = 'lib' + info.lname + '.so'
+    shared_library = pathlib.Path(info.lib_path) / library_name
     if not shared_library.exists() and not shared_library.is_file():
         raise RuntimeError(f'library {shared_library} does not exist')
 
@@ -78,11 +82,16 @@ def generate(args):
         f.write(BUILD_FILE_CONTENTS.format(
             name=name,
             includes=includes,
-            shared_library=shared_library,
+            shared_library=library_name,
         ))
 
     with open("MODULE.bazel.generated", 'w') as f:
         f.write(MODULE_FILE_CONTENTS.format(name=name, version=version))
+
+    print(json.dumps({
+        'target': str(shared_library),
+        'name': library_name
+    }))
 
 
 def main():

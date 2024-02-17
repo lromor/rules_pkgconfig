@@ -1,0 +1,4 @@
+module(
+    name = "libpng",
+    version = "1.6.40",
+)

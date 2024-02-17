@@ -1,0 +1,7 @@
+# Google apis does not support nixos. We are hardcoding the config setting
+# that defaults the ca_bundle_style to debian! It's possible to specify
+# a custom path as well. For more details, have a look at: https://github.com/googleapis/google-cloud-cpp/blob/main/bazel/curl.BUILD
+# We could also extend the platform detection to detect nixos and automatically
+# switch between the paths.
+build --action_env=NIX_LD=/run/current-system/sw/share/nix-ld/lib/ld.so
+test --test_env=NIX_LD=/run/current-system/sw/share/nix-ld/lib/ld.so

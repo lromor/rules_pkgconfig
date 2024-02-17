@@ -24,6 +24,8 @@
           gopls
           python3
           nodePackages.pyright
+          pkg-config
+          libpng
         ];
         postShellHook = ''
           export LD_LIBRARY_PATH=${stdenv.cc.cc.lib}/lib/:${libPath}:/run/opengl-driver/lib/:$LD_LIBRARY_PATH

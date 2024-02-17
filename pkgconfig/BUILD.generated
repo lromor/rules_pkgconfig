@@ -1,0 +1,7 @@
+cc_import(
+    name = "libpng",
+    shared_library = "libpng16.so",
+    includes = [
+        "/nix/store/212p3xm056zwv41ji1y8cc4yfd4k25ql-libpng-apng-1.6.40-dev/include/libpng16",
+    ],
+)
