@@ -11,8 +11,8 @@ def _create_system_package_repo_impl(repository_ctx):
     result = module_ctx.execute([
         resolver,
         "generate",
-        attrs.version,
         attrs.name,
+        attrs.version,
         attrs.shared_library,
         attrs.static_library,
     ] + attrs.hdrs)
@@ -28,8 +28,8 @@ create_system_package_repo = repository_rule(
         "version": attr.string(),
         "name": attr.string(),
         "hdrs": attr.string_list(mandatory=False, default=[]),
-        "shared_library": attr.string(),
-        "static_library": attr.string(),
+        "shared_library": attr.string(default=''),
+        "static_library": attr.string(default=''),
     },
 )
 
