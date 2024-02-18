@@ -14,10 +14,6 @@ def _create_system_package_repo_impl(repository_ctx):
     ])
     if result.return_code != 0:
         fail(result.stderr)
-    lib_info = json.decode(result.stdout)
-    repository_ctx.symlink(lib_info['target'], lib_info['name'])
-    repository_ctx.file("BUILD", repository_ctx.read("./BUILD.generated"))
-    repository_ctx.file("MODULE.bazel", repository_ctx.read("./MODULE.bazel.generated"))
 
 
 create_system_package_repo = repository_rule(

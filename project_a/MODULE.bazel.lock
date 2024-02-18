@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 3,
-  "moduleFileHash": "62a7506114e90547359f8c69b7a7bedafcb3d0926918960597730804dcf96643",
+  "moduleFileHash": "952f76e206f9b8d807e9c0bb478905454fcab6eccc5de94821f067e62509aeed",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -35,7 +35,8 @@
             "column": 36
           },
           "imports": {
-            "libpng": "libpng"
+            "libpng": "libpng",
+            "zlib": "zlib"
           },
           "devImports": [],
           "tags": [
@@ -48,6 +49,18 @@
               "location": {
                 "file": "@@//:MODULE.bazel",
                 "line": 13,
+                "column": 35
+              }
+            },
+            {
+              "tagName": "import_package",
+              "attributeValues": {
+                "name": "zlib"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "@@//:MODULE.bazel",
+                "line": 14,
                 "column": 35
               }
             }
@@ -749,12 +762,19 @@
     },
     "@@pkgconfig~override//:extension.bzl%pkgconfig_extension": {
       "general": {
-        "bzlTransitiveDigest": "INc8ADRSGCPXgD3jfCRm28kmnLoninCUvGLwhndylN0=",
+        "bzlTransitiveDigest": "0HvfMbHo2H4X8tgp1oEkIa7RYXP67H033DkYCuyNYcc=",
         "accumulatedFileDigests": {
-          "@@pkgconfig~override//:resolver.py": "8debaa954fa9d0223d434606edbb7f2627e549084c246c879ccdb534d7947cee"
+          "@@pkgconfig~override//:resolver.py": "a1b6f119deaf624c67189caa111aebb0a94af45cca8344b73f7b7a44dc0b9ca2"
         },
         "envVariables": {},
         "generatedRepoSpecs": {
+          "zlib": {
+            "bzlFile": "@@pkgconfig~override//:extension.bzl",
+            "ruleClassName": "create_system_package_repo",
+            "attributes": {
+              "name": "pkgconfig~override~pkgconfig_extension~zlib"
+            }
+          },
           "libpng": {
             "bzlFile": "@@pkgconfig~override//:extension.bzl",
             "ruleClassName": "create_system_package_repo",

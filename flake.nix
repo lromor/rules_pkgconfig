@@ -14,14 +14,11 @@
         buildInputs = [
           bazel_7
           gcc
-          bash
           zlib
+          bash
           jdk11
           git
-          lcov
           clang-tools
-          go
-          gopls
           python3
           nodePackages.pyright
           pkg-config

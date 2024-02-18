@@ -11,4 +11,7 @@ local_path_override(
 
 pkgconfig_extension = use_extension("@pkgconfig//:extension.bzl", "pkgconfig_extension")
 pkgconfig_extension.import_package(name = "libpng")
+pkgconfig_extension.import_package(name = "zlib")
+
 use_repo(pkgconfig_extension, "libpng")
+use_repo(pkgconfig_extension, "zlib")

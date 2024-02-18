@@ -4,5 +4,6 @@ cc_binary(
     srcs = ["pnginfo.cc"],
     deps = [
         "@libpng//:libpng",
-    ]
+        "@zlib//:zlib",
+    ],
 )

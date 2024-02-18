@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import pathlib
 import json
+import os
 
 
 BUILD_FILE_CONTENTS = """cc_import(
@@ -11,6 +12,7 @@ BUILD_FILE_CONTENTS = """cc_import(
     shared_library = "{shared_library}",
     includes = {includes}
     visibility = ["//visibility:public"],
+    linkopts = {linkopts}
 )
 """
 
@@ -46,8 +48,6 @@ def get_pkg_info(name):
         '--libs-only-L',
         name,
     ]).decode().strip().removeprefix('-L')
-    if not lib_path:
-        lib_path = '/usr/lib'
     includes = map(lambda x: x.removeprefix('-I'), subprocess.check_output([
         'pkg-config',
         '--cflags-only-I',
@@ -62,6 +62,11 @@ def get_pkg_info(name):
     )
 
 
+STANDARD_DEBIAN_PATHS = [
+    '/usr/lib/x86_64-linux-gnu',
+    '/usr/lib'
+]
+
 
 def generate(args):
     info = get_pkg_info(args.name)
@@ -72,26 +77,28 @@ def generate(args):
 
     # Check for the existance of the library .so
     library_name = 'lib' + info.lname + '.so'
-    shared_library = pathlib.Path(info.lib_path) / library_name
-    if not shared_library.exists() and not shared_library.is_file():
-        raise RuntimeError(f'library {shared_library} does not exist')
+    lib_path = pathlib.Path(info.lib_path)
 
+    results = list(filter(lambda x: x.exists() and x.is_file() , map(lambda x: lib_path / library_name, [lib_path] + STANDARD_DEBIAN_PATHS)))
+    if len(results) == 0:
+        raise RuntimeError(f'could not find {library_name}')
+
+    shared_library = results[0]
+    os.symlink(shared_library, library_name)
+
+    rpath = shared_library.parent
     name = args.name
     version = info.version
-    with open("BUILD.generated", 'w') as f:
+    with open("BUILD", 'w') as f:
         f.write(BUILD_FILE_CONTENTS.format(
             name=name,
             includes=includes,
             shared_library=library_name,
+            linkopts = f'["-Wl,-rpath {rpath}"]',
         ))
 
-    with open("MODULE.bazel.generated", 'w') as f:
+    with open("MODULE", 'w') as f:
         f.write(MODULE_FILE_CONTENTS.format(name=name, version=version))
-
-    print(json.dumps({
-        'target': str(shared_library),
-        'name': library_name
-    }))
 
 
 def main():
